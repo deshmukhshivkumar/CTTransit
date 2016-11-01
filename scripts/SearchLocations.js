@@ -42,4 +42,16 @@
 	$("#clearToLocation").click(function(){
 		$("#inputToLocation").val('');
 	});
-  } );
+	
+});
+  
+function initMap(){
+
+var map = new google.maps.Map(document.getElementById('divTransitMap'),
+		{center: {lat: 41.6714820, lng: -72.766231},
+		zoom: 10
+		});		    
+}
+
+  
+  

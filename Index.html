@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="Scripts/bootstrap3-typeahead.min.js"> </script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKCfeZWk7iA9OXoLSWVpUfXoLm2ekRvgg&callback=initMap"></script>
 	<style>
 		.searchclear {
 			position: absolute;
@@ -20,6 +21,10 @@
 			font-size: 14px;
 			cursor: pointer;			
 		}	
+		.map {
+			height: 400px;
+			width: 100%;
+       }
 	</style>
 </head>
 <body>
@@ -55,7 +60,10 @@
                     
                 </form>
             </div>
-        </div>
+        </div>		
+		<div id="divTransitMap" class="map">
+			Map will render here
+		</div>		
     </div>
 </body>
 </html>
