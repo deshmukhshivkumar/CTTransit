@@ -47,10 +47,33 @@
   
 function initMap(){
 
-var map = new google.maps.Map(document.getElementById('divTransitMap'),
-		{center: {lat: 41.6714820, lng: -72.766231},
-		zoom: 10
-		});		    
+	var map = new google.maps.Map(document.getElementById('divTransitMap'),
+			{
+				center: {lat: 41.6714820, lng: -72.766231},
+				zoom: 10
+			});	
+			
+	var fastTrackBoundryCoordinates = [
+                   {lat: 41.806523, lng: -72.751854},
+                   {lat: 41.806523, lng: -72.586373},
+                   {lat: 41.726378, lng: -72.590493},
+                   {lat: 41.616617, lng: -72.754944},
+                   {lat: 41.645357, lng: -72.869614},
+                   {lat: 41.750716, lng: -72.853821},
+                   {lat: 41.806523, lng: -72.751854}
+               ];
+			   
+	var fastrakPolygon = 
+			new google.maps.Polygon({paths: fastTrackBoundryCoordinates});	
+	
+	// ToDo: Change the URL
+	var	ctfastrak = new google.maps.KmlLayer({
+				map: map,
+				url: 'https://drive.google.com/uc?export=download&id=0B4WRPCH-9r7qcFVPajgzTk5wanc',
+					  
+				preserveViewport: true,
+				suppressInfoWindows: true
+			}); 
 }
 
   

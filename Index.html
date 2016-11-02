@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>
-        CT Transit Fast Track Application
+        CT Transit Fastrak Application
     </title>
 	<script type="text/javascript" src="Scripts/jquery-3.1.0.min.js"> </script>
 	<script type="text/javascript" src="Scripts/bootstrap.js"> </script>
@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="Scripts/bootstrap3-typeahead.min.js"> </script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+	<!-- ToDo: Change the API key -->
 	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKCfeZWk7iA9OXoLSWVpUfXoLm2ekRvgg&callback=initMap"></script>
 	<style>
 		.searchclear {
@@ -30,7 +31,8 @@
 <body>
     <div>
         <div class="panel panel-info">
-            <div class="panel-heading">CT Fast Track Search Application</div>
+            <div class="panel-heading">
+			<strong class='lead text-center'>CT Fastrak Search Application</strong></div>
             <div class="panel-body">
                 <form name="userCreationForm" 
                       class="form-horizontal" role="form" novalidate>
@@ -62,7 +64,7 @@
             </div>
         </div>		
 		<div id="divTransitMap" class="map">
-			Map will render here
+			
 		</div>		
     </div>
 </body>
