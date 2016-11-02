@@ -20,10 +20,22 @@
 			height: 14px;
 			margin: auto;
 			font-size: 14px;
+			cursor: pointer;	
+			z-index:99;
+		}
+		.currentLocation {
+			position: absolute;
+			right: -10px;
+			top: 0;
+			bottom: 0;
+			height: 14px;
+			margin: auto;
+			font-size: 14px;
 			cursor: pointer;			
-		}	
+			z-index:100;
+		}			
 		.map {
-			height: 400px;
+			height: 100%;
 			width: 100%;
        }
 	</style>
@@ -31,8 +43,8 @@
 <body>
     <div>
         <div class="panel panel-info">
-            <div class="panel-heading">
-			<strong class='lead text-center'>CT Fastrak Search Application</strong></div>
+           <!--  <div class="panel-heading">
+			<strong class='lead text-center col-md-offset-5'>CT Fastrak Search Application</strong></div> -->
             <div class="panel-body">
                 <form name="userCreationForm" 
                       class="form-horizontal" role="form" novalidate>
@@ -44,7 +56,10 @@
 							name="inputFromLocation"
 							placeholder="From"
 							autocomplete="off"/>
-							<span id="clearFromLocation" class="glyphicon glyphicon-remove-circle col-sm-1 searchclear"></span>
+							
+							 <span id="clearFromLocation" class="glyphicon glyphicon-remove-circle searchclear"></span>
+							<span id="currentFromLocation" class="glyphicon glyphicon-map-marker currentLocation" 
+							title="Current Location"></span>
                         </div>
 						
 						<label for="inputToLocation" class="col-sm-1 control-label">To</label>
@@ -55,9 +70,10 @@
 							placeholder="To"
 							autocomplete="off"/>
 						<span id="clearToLocation" class="glyphicon glyphicon-remove-circle col-sm-1 searchclear"></span>
+						<span id="currentToLocation" class="glyphicon glyphicon-map-marker col-sm-1 currentLocation" title="Current Location"></span>
                         </div>
 						
-						<button type="submit" class="btn btn-md btn-primary col-sm-2">Search</button>
+						<button type="submit" class="btn btn-md btn-primary col-md-offset-1">Search</button>
 					</div>
                     
                 </form>
