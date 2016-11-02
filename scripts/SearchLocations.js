@@ -1,4 +1,6 @@
- $( function() {
+var _map;
+
+$( function() {
     var availableTags = [
 		{id:"12283",name:"East Main St Station Platform A",stopLat:"41.6714820", stopLan:"-72.766231"},
 		{id:"12284",name:"East St. Station Platform A",stopLat:"41.6879390", stopLan:"-72.758109"},
@@ -47,7 +49,7 @@
   
 function initMap(){
 
-	var map = new google.maps.Map(document.getElementById('divTransitMap'),
+	_map = new google.maps.Map(document.getElementById('divTransitMap'),
 			{
 				center: {lat: 41.6714820, lng: -72.766231},
 				zoom: 10
@@ -68,13 +70,34 @@ function initMap(){
 	
 	// ToDo: Change the URL
 	var	ctfastrak = new google.maps.KmlLayer({
-				map: map,
+				map: _map,
 				url: 'https://drive.google.com/uc?export=download&id=0B4WRPCH-9r7qcFVPajgzTk5wanc',
-					  
 				preserveViewport: true,
 				suppressInfoWindows: true
 			}); 
 }
 
+
+function displayBusRoute(startLat, startLng, endLat, endLng) {
+	var start = new google.maps.LatLng(startLat, startLng);
+	var end = new google.maps.LatLng(endLat, endLng);
+	
+	var directionsDisplay = new google.maps.DirectionsRenderer();
+	directionsDisplay.setMap(map);
+	
+	var request = {
+		origin: start,
+		destination: end,
+		travelMode: google.maps.TravelMode.TRANSIT
+	};
+	directionsService.route(request, function (response, status) {
+		if (status === google.maps.DirectionsStatus.OK) {
+			directionsDisplay.setDirections(response);
+			document.getElementById('content-content').innerHTML = ""
+			directionsDisplay.setPanel(document.getElementById("content-content"));
+			document.getElementById("content-header").innerHTML = "Your Directions"
+		}
+	});
+}
   
   
