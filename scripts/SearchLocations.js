@@ -131,35 +131,7 @@ var _fastrakBusStops = [{
 
 var _fromLocationAutocomplete;
 var _toLocationAutoComplete;
-
-function getCurrentLocation() {
-
-	var mapView = new google.maps.InfoWindow({
-			map: _map
-		});
-
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function (position) {
-
-			var currentPosition = {
-				lat: parseFloat(position.coords.latitude),
-				lng: parseFloat(position.coords.longitude)
-			};
-
-			mapView.setPosition(currentPosition);
-			mapView.setContent('You are here.');
-			_map.setCenter(position);
-			//_map.setZoom(12);
-			//findNearestBusStop(currentPosition.lat, currentPosition.lng);
-			return currentPosition;
-		}, function () {
-			handleLocationError(true, mapView, map.getCenter());
-		});
-	} else {
-		// Browser doesn't support Geolocation
-		handleLocationError(false, mapView, map.getCenter());
-	}
-}
+var _usersCurrentLocation;
 
 function fillInAddress() {
 	// Get the place details from the autocomplete object.
@@ -167,25 +139,15 @@ function fillInAddress() {
 	console.log(place);
 }
 
-function initGoogleAutoComplete(position) {
+function initGoogleAutoComplete() {
 	_fromLocationAutocomplete = new google.maps.places.Autocomplete((document.getElementById('inputFromLocation')), {
 			types: ['geocode']
 		});
-	_toLocationAutocomplete = new google.maps.places.Autocomplete((document.getElementById('inputToLocation')), {
+	_toLocationAutoComplete = new google.maps.places.Autocomplete((document.getElementById('inputToLocation')), {
 			types: ['geocode']
 		});
-	var geolocation = {
-		lat: position.coords.latitude,
-		lng: position.coords.longitude
-	};
-	var circle = new google.maps.Circle({
-			center: geolocation,
-			radius: position.coords.accuracy
-		});
-	_fromLocationAutocomplete.setBounds(circle.getBounds());
+
 	_fromLocationAutocomplete.addListener('place_changed', fillInAddress);
-	
-	_toLocationAutoComplete.setBounds(circle.getBounds());
 	_toLocationAutoComplete.addListener('place_changed', fillInAddress);
 }
 
@@ -205,10 +167,7 @@ $(function () {
 
 });
 
-function initMap() {
-
-	var currentLocation = getCurrentLocation();
-
+function initGoogleComponents() {
 	_map = new google.maps.Map(document.getElementById('divTransitMap'), {
 			// ToDo: Center must be users current location
 			center: {
@@ -260,7 +219,42 @@ function initMap() {
 			suppressInfoWindows: true
 		});
 
-	initGoogleAutoComplete(currentLocation);
+	initGoogleAutoComplete();
+
+	var mapView = new google.maps.InfoWindow({
+			map: _map
+		});
+
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function (position) {
+			_usersCurrentLocation = position;
+		
+			
+			var currentPosition = {
+				lat: parseFloat(position.coords.latitude),
+				lng: parseFloat(position.coords.longitude)
+			};
+
+			mapView.setPosition(currentPosition);
+			mapView.setContent('You are here.');
+		
+			var circle = new google.maps.Circle({
+					center: currentPosition,
+					radius: position.coords.accuracy
+				});
+
+			_fromLocationAutocomplete.setBounds(circle.getBounds());
+			_toLocationAutoComplete.setBounds(circle.getBounds());
+			//_map.setCenter(position);
+
+		}, function () {
+			handleLocationError(true, mapView, map.getCenter());
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleLocationError(false, mapView, map.getCenter());
+	}
+
 }
 
 function findNearestBusStop(lattitude, longitude) {
