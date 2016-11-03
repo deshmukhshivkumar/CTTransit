@@ -129,15 +129,67 @@ var _fastrakBusStops = [{
 	},
 ];
 
+var _fromLocationAutocomplete;
+var _toLocationAutoComplete;
+
+function getCurrentLocation() {
+
+	var mapView = new google.maps.InfoWindow({
+			map: _map
+		});
+
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(function (position) {
+
+			var currentPosition = {
+				lat: parseFloat(position.coords.latitude),
+				lng: parseFloat(position.coords.longitude)
+			};
+
+			mapView.setPosition(currentPosition);
+			mapView.setContent('You are here.');
+			_map.setCenter(position);
+			//_map.setZoom(12);
+			//findNearestBusStop(currentPosition.lat, currentPosition.lng);
+			return currentPosition;
+		}, function () {
+			handleLocationError(true, mapView, map.getCenter());
+		});
+	} else {
+		// Browser doesn't support Geolocation
+		handleLocationError(false, mapView, map.getCenter());
+	}
+}
+
+function fillInAddress() {
+	// Get the place details from the autocomplete object.
+	var place = _fromLocationAutocomplete.getPlace();
+	console.log(place);
+}
+
+function initGoogleAutoComplete(position) {
+	_fromLocationAutocomplete = new google.maps.places.Autocomplete((document.getElementById('inputFromLocation')), {
+			types: ['geocode']
+		});
+	_toLocationAutocomplete = new google.maps.places.Autocomplete((document.getElementById('inputToLocation')), {
+			types: ['geocode']
+		});
+	var geolocation = {
+		lat: position.coords.latitude,
+		lng: position.coords.longitude
+	};
+	var circle = new google.maps.Circle({
+			center: geolocation,
+			radius: position.coords.accuracy
+		});
+	_fromLocationAutocomplete.setBounds(circle.getBounds());
+	_fromLocationAutocomplete.addListener('place_changed', fillInAddress);
+	
+	_toLocationAutoComplete.setBounds(circle.getBounds());
+	_toLocationAutoComplete.addListener('place_changed', fillInAddress);
+}
+
 $(function () {
-
-	$("#inputFromLocation").typeahead({
-		source: _fastrakBusStops
-	});
-
-	$("#inputToLocation").typeahead({
-		source: _fastrakBusStops
-	});
 
 	$("#clearFromLocation").click(function () {
 		$("#inputFromLocation").val('');
@@ -148,42 +200,15 @@ $(function () {
 	});
 
 	$("#currentFromLocation, #currentToLocation").click(function () {
-		getCurrentLocation();
+		//getCurrentLocation();
 	});
 
 });
 
-function getCurrentLocation() {
-
-	var mapView = new google.maps.InfoWindow({
-			map: _map
-		});
-
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function (position) {
-			console.log(position);
-			var currentPosition = {
-				lattitude: parseFloat(position.coords.latitude),
-				longitude: parseFloat(position.coords.longitude)
-			};
-
-			mapView.setPosition(currentPosition);
-			mapView.setContent('You are here.');
-			_map.setCenter(currentPosition);
-			_map.setZoom(12);
-			
-			debugger;
-			findNearestBusStop(currentPosition.lattitude, currentPosition.longitude);
-		}, function () {
-			handleLocationError(true, mapView, map.getCenter());
-		});
-	} else {
-		// Browser doesn't support Geolocation
-		handleLocationError(false, mapView, map.getCenter());
-	}
-}
-
 function initMap() {
+
+	var currentLocation = getCurrentLocation();
+
 	_map = new google.maps.Map(document.getElementById('divTransitMap'), {
 			// ToDo: Center must be users current location
 			center: {
@@ -234,24 +259,26 @@ function initMap() {
 			preserveViewport: true,
 			suppressInfoWindows: true
 		});
+
+	initGoogleAutoComplete(currentLocation);
 }
 
 function findNearestBusStop(lattitude, longitude) {
-	displayWalkRouteOnMap(lattitude, longitude, parseFloat(_fastrakBusStops[0].stopLat),parseFloat(_fastrakBusStops[0].stopLan));
+	displayWalkRouteOnMap(lattitude, longitude, parseFloat(_fastrakBusStops[0].stopLat), parseFloat(_fastrakBusStops[0].stopLan));
 }
 
 function displayWalkRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitude) {
 	var start = new google.maps.LatLng(fromLatitude, fromLongitude);
 	var end = new google.maps.LatLng(toLatitude, toLongitude);
-	
+
 	_displayDirections.setMap(_map);
-	
+
 	var directionServiceRequest = {
 		origin: start,
 		destination: end,
 		travelMode: google.maps.TravelMode.WALKING
 	};
-	
+
 	_directionService.route(directionServiceRequest, function (response, status) {
 		if (status == google.maps.DirectionsStatus.OK) {
 			_displayDirections.setDirections(response);

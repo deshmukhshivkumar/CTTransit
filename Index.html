@@ -6,11 +6,11 @@
 <script type="text/javascript" src="Scripts/jquery-3.1.0.min.js"> </script>
 <script type="text/javascript" src="Scripts/bootstrap.js"> </script>
 <script type="text/javascript" src="Scripts/SearchLocations.js"> </script>
-<script type="text/javascript" src="Scripts/bootstrap3-typeahead.min.js"> </script>
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css">
+<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
 <!-- ToDo: Change the API key -->
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKCfeZWk7iA9OXoLSWVpUfXoLm2ekRvgg&callback=initMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHEujlbA2PJPdS8Uyg5hcKn0e-DRv5g7c&libraries=places&callback=initMap"></script>
 <style>
 	.searchclear {
 		position: absolute;
@@ -47,6 +47,9 @@
 		overflow-y:scroll;
    }
    
+   .locationTextBox{
+	   font-size: 12px;
+   }
 </style>
 </head>
 <body>
@@ -60,7 +63,7 @@
 					<div class="form-group">
 						<label for="inputFromLocation" class="col-sm-1 control-label">From</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control"
+							<input type="text" class="form-control locationTextBox"
 							id="inputFromLocation" 
 							name="inputFromLocation"
 							placeholder="From"
@@ -73,7 +76,7 @@
 						
 						<label for="inputToLocation" class="col-sm-1 control-label">To</label>
 						<div class="col-sm-3">
-							<input type="text" class="form-control"
+							<input type="text" class="form-control locationTextBox"
 							id="inputToLocation" 
 							name="inputToLocation"
 							placeholder="To"
