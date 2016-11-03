@@ -155,44 +155,49 @@ $(function () {
 
 function getCurrentLocation() {
 
-	var infoWindow = new google.maps.InfoWindow({
+	var mapView = new google.maps.InfoWindow({
 			map: _map
 		});
 
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function (position) {
 			console.log(position);
-			var pos = {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude
+			var currentPosition = {
+				lattitude: parseFloat(position.coords.latitude),
+				longitude: parseFloat(position.coords.longitude)
 			};
 
-			infoWindow.setPosition(pos);
-			infoWindow.setContent('You are here.');
-			_map.setCenter(pos);
+			mapView.setPosition(currentPosition);
+			mapView.setContent('You are here.');
+			_map.setCenter(currentPosition);
 			_map.setZoom(12);
+			
+			debugger;
+			findNearestBusStop(currentPosition.lattitude, currentPosition.longitude);
 		}, function () {
-			handleLocationError(true, infoWindow, map.getCenter());
+			handleLocationError(true, mapView, map.getCenter());
 		});
 	} else {
 		// Browser doesn't support Geolocation
-		handleLocationError(false, infoWindow, map.getCenter());
+		handleLocationError(false, mapView, map.getCenter());
 	}
 }
 
 function initMap() {
 	_map = new google.maps.Map(document.getElementById('divTransitMap'), {
+			// ToDo: Center must be users current location
 			center: {
 				lat: 41.6714820,
 				lng: -72.766231
 			},
 			zoom: 10
 		});
-	
-	_displayDirections = new google.maps.DirectionsRenderer();
-	_directionService = new google.maps.DirectionsService();
 
-	
+	// Used to retrive direction from google map
+	_directionService = new google.maps.DirectionsService();
+	// Used to render direction
+	_displayDirections = new google.maps.DirectionsRenderer();
+
 	var fastTrackBoundryCoordinates = [{
 			lat: 41.806523,
 			lng: -72.751854
@@ -232,27 +237,26 @@ function initMap() {
 }
 
 function findNearestBusStop(lattitude, longitude) {
-	displayWalkRoute(lattitude, longitude, _fastrakBusStops[0].stopLat, _fastrakBusStops[0].stopLan);
+	displayWalkRouteOnMap(lattitude, longitude, parseFloat(_fastrakBusStops[0].stopLat),parseFloat(_fastrakBusStops[0].stopLan));
 }
 
-function displayBusRoute(startLat, startLng, endLat, endLng) {
-	var start = new google.maps.LatLng(startLat, startLng);
-	var end = new google.maps.LatLng(endLat, endLng);
-
-	var directionsDisplay = new google.maps.DirectionsRenderer();
-	directionsDisplay.setMap(map);
-
-	var request = {
+function displayWalkRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitude) {
+	var start = new google.maps.LatLng(fromLatitude, fromLongitude);
+	var end = new google.maps.LatLng(toLatitude, toLongitude);
+	
+	_displayDirections.setMap(_map);
+	
+	var directionServiceRequest = {
 		origin: start,
 		destination: end,
-		travelMode: google.maps.TravelMode.TRANSIT
+		travelMode: google.maps.TravelMode.WALKING
 	};
-	directionsService.route(request, function (response, status) {
-		if (status === google.maps.DirectionsStatus.OK) {
-			directionsDisplay.setDirections(response);
-			document.getElementById('content-content').innerHTML = ""
-				directionsDisplay.setPanel(document.getElementById("content-content"));
-			document.getElementById("content-header").innerHTML = "Your Directions"
+	
+	_directionService.route(directionServiceRequest, function (response, status) {
+		if (status == google.maps.DirectionsStatus.OK) {
+			_displayDirections.setDirections(response);
+			$('#divDirections').html("");
+			$('#divDirections').html(_displayDirections.setPanel(document.getElementById("divDirections")));
 		}
 	});
 }
