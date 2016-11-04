@@ -129,25 +129,25 @@ var _fastrakBusStops = [{
 	},
 ];
 
-var _fromLocationAutocomplete;
+var _fromLocationAutoComplete;
 var _toLocationAutoComplete;
 var _usersCurrentLocation;
 
 function fillInAddress() {
 	// Get the place details from the autocomplete object.
-	var place = _fromLocationAutocomplete.getPlace();
+	var place = _fromLocationAutoComplete.getPlace();
 	console.log(place);
 }
 
 function initGoogleAutoComplete() {
-	_fromLocationAutocomplete = new google.maps.places.Autocomplete((document.getElementById('inputFromLocation')), {
+	_fromLocationAutoComplete = new google.maps.places.Autocomplete((document.getElementById('inputFromLocation')), {
 			types: ['geocode']
 		});
 	_toLocationAutoComplete = new google.maps.places.Autocomplete((document.getElementById('inputToLocation')), {
 			types: ['geocode']
 		});
 
-	_fromLocationAutocomplete.addListener('place_changed', fillInAddress);
+	_fromLocationAutoComplete.addListener('place_changed', fillInAddress);
 	_toLocationAutoComplete.addListener('place_changed', fillInAddress);
 }
 
@@ -165,6 +165,15 @@ $(function () {
 		//getCurrentLocation();
 	});
 
+	$("#btnSubmit").click(function(){
+		
+		displayBusRouteOnMap(
+		_fromLocationAutoComplete.getPlace().geometry.location.lat(),
+		_fromLocationAutoComplete.getPlace().geometry.location.lng(),
+		_toLocationAutoComplete.getPlace().geometry.location.lat(),
+		_toLocationAutoComplete.getPlace().geometry.location.lng()
+		);
+	});
 });
 
 function initGoogleComponents() {
@@ -243,7 +252,7 @@ function initGoogleComponents() {
 					radius: position.coords.accuracy
 				});
 
-			_fromLocationAutocomplete.setBounds(circle.getBounds());
+			_fromLocationAutoComplete.setBounds(circle.getBounds());
 			_toLocationAutoComplete.setBounds(circle.getBounds());
 			//_map.setCenter(position);
 
@@ -259,6 +268,28 @@ function initGoogleComponents() {
 
 function findNearestBusStop(lattitude, longitude) {
 	displayWalkRouteOnMap(lattitude, longitude, parseFloat(_fastrakBusStops[0].stopLat), parseFloat(_fastrakBusStops[0].stopLan));
+}
+
+function displayBusRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitude){
+	debugger;
+	var start = new google.maps.LatLng(fromLatitude, fromLongitude);
+	var end = new google.maps.LatLng(toLatitude, toLongitude);
+
+	_displayDirections.setMap(_map);
+
+	var directionServiceRequest = {
+		origin: start,
+		destination: end,
+		travelMode: google.maps.TravelMode.TRANSIT
+	};
+	
+	_directionService.route(directionServiceRequest, function (response, status) {
+		if (status == google.maps.DirectionsStatus.OK) {
+			_displayDirections.setDirections(response);
+			$('#divDirections').html("");
+			$('#divDirections').html(_displayDirections.setPanel(document.getElementById("divDirections")));
+		}
+	});
 }
 
 function displayWalkRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitude) {
