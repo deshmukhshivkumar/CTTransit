@@ -166,15 +166,39 @@ $(function () {
 	});
 
 	$("#btnSubmit").click(function(){
-		
+		var nearestBusStop = calculateClosestStop(_usersCurrentLocation.coords.latitude,
+_usersCurrentLocation.coords.longitude,_fastrakBusStops);
+
+		console.log(nearestBusStop);
+
+		displayWalkRouteOnMap(_usersCurrentLocation.coords.latitude, 
+			_usersCurrentLocation.coords.longitude,
+			nearestBusStop.stopLat,
+			nearestBusStop.stopLan);
+		/*
 		displayBusRouteOnMap(
 		_fromLocationAutoComplete.getPlace().geometry.location.lat(),
 		_fromLocationAutoComplete.getPlace().geometry.location.lng(),
 		_toLocationAutoComplete.getPlace().geometry.location.lat(),
 		_toLocationAutoComplete.getPlace().geometry.location.lng()
 		);
+		*/
 	});
 });
+
+function loadKmlLayer(src, map) {
+    var kmlLayer = new google.maps.KmlLayer(src, {
+      suppressInfoWindows: true,
+      preserveViewport: false,
+      map: map
+    });
+
+    google.maps.event.addListener(kmlLayer, 'click', function(event) {
+      var content = event.featureData.infoWindowHtml;
+      var testimonial = document.getElementById('capture');
+      testimonial.innerHTML = content;
+    });
+}
 
 function initGoogleComponents() {
 	_map = new google.maps.Map(document.getElementById('divTransitMap'), {
@@ -185,6 +209,8 @@ function initGoogleComponents() {
 			},
 			zoom: 10
 		});
+
+	
 
 	// Used to retrive direction from google map
 	_directionService = new google.maps.DirectionsService();
@@ -223,10 +249,19 @@ function initGoogleComponents() {
 	// ToDo: Change the URL
 	var ctfastrak = new google.maps.KmlLayer({
 			map: _map,
-			url: 'https://drive.google.com/uc?export=download&id=0B4WRPCH-9r7qX05XN0FldzI0anM',
+			url: 'https://drive.google.com/uc?export=download&id=0B23t31esDVFRcVBaUGk5N3dRbVU',
 			preserveViewport: true,
 			suppressInfoWindows: true
 		});
+
+	
+		ctfastrak.addListener('click', function(kmlEvent){
+									//document.getElementById('content-header').innerHTML = ""
+									var text = kmlEvent.featureData.name + '<br>' + kmlEvent.featureData.description;
+									//showInContentWindow(text);
+									console.log(text);
+									});
+	//loadKmlLayer('https://drive.google.com/uc?export=download&id=0B23t31esDVFRcVBaUGk5N3dRbVU', _map);
 
 	initGoogleAutoComplete();
 
@@ -290,40 +325,4 @@ function displayBusRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitu
 			$('#divDirections').html(_displayDirections.setPanel(document.getElementById("divDirections")));
 		}
 	});
-}
-
-function displayWalkRouteOnMap(fromLatitude, fromLongitude, toLatitude, toLongitude) {
-	var start = new google.maps.LatLng(fromLatitude, fromLongitude);
-	var end = new google.maps.LatLng(toLatitude, toLongitude);
-
-	_displayDirections.setMap(_map);
-
-	var directionServiceRequest = {
-		origin: start,
-		destination: end,
-		travelMode: google.maps.TravelMode.WALKING
-	};
-
-	_directionService.route(directionServiceRequest, function (response, status) {
-		if (status == google.maps.DirectionsStatus.OK) {
-			_displayDirections.setDirections(response);
-			$('#divDirections').html("");
-			$('#divDirections').html(_displayDirections.setPanel(document.getElementById("divDirections")));
-		}
-	});
-}
-
-// This function finds the distance between 2 points in miles.
-// reference : http://www.geodatasource.com/developers/javascript
-function getDistanceBetweenTwoPointsInMiles(fromLatitude, fromLongitude, toLatitude, toLongitude) {
-	// ToDo: Check if latitudes, longitudes are valid.
-	var radfromLatitude = Math.PI * fromLatitude / 180
-		var radtoLatitude = Math.PI * toLatitude / 180
-		var theta = fromLongitude - toLongitude
-		var radtheta = Math.PI * theta / 180
-		var distance = Math.sin(radfromLatitude) * Math.sin(radtoLatitude) + Math.cos(radfromLatitude) * Math.cos(radtoLatitude) * Math.cos(radtheta);
-	distance = Math.acos(distance);
-	distance = distance * 180 / Math.PI;
-	distance = distance * 60 * 1.1515;
-	return distance
 }
