@@ -251,10 +251,10 @@ function initGoogleComponents() {
 			map: _map,
 			url: 'https://drive.google.com/uc?export=download&id=0B23t31esDVFRcVBaUGk5N3dRbVU',
 			preserveViewport: true,
-			suppressInfoWindows: true
+			suppressInfoWindows: false
 		});
 
-	
+	  debugger;
 		ctfastrak.addListener('click', function(kmlEvent){
 									//document.getElementById('content-header').innerHTML = ""
 									var text = kmlEvent.featureData.name + '<br>' + kmlEvent.featureData.description;
